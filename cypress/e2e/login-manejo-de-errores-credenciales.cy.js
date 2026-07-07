@@ -1,14 +1,29 @@
 describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () => {
 
-  // Definición de datos de prueba positivos y negativos
-  const validUser = 'root';
-  const validPassword = '1234';
-  const invalidUser = 'prueba_invalida_123';
-  const invalidPassword = 'password_falsa_123';
+  let loginUrl;
+  let validUser;
+  let validPassword;
+  let invalidUser;
+  let invalidPassword;
+
+  before(() => {
+    cy.env(['LOGIN_URL', 'VALID_USER', 'VALID_PASSWORD', 'INVALID_USER', 'INVALID_PASSWORD'])
+      .then((env) => {
+        loginUrl = env.LOGIN_URL;
+        validUser = env.VALID_USER;
+        validPassword = env.VALID_PASSWORD;
+        invalidUser = env.INVALID_USER;
+        invalidPassword = env.INVALID_PASSWORD;
+
+        if (!loginUrl || !validUser || !validPassword || !invalidUser || !invalidPassword) {
+          throw new Error('Missing one or more required Cypress env values');
+        }
+      });
+  });
 
   beforeEach(() => {
     // Precondición: El usuario se encuentra en la pantalla de inicio de sesión
-    cy.visit('https://scpcdmxserverwebrtc.azurewebsites.net/login');
+    cy.visit(loginUrl);
   });
 
   it('CP-F1-002-01: Inicio de sesión con usuario inválido', () => {

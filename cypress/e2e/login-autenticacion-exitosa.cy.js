@@ -1,13 +1,25 @@
 describe('Flujo 1 - Inicio de Sesión Stream RTC', () => {
 
-    // Variables para datos de prueba (Idealmente, en un proyecto real, 
-    // esto debería provenir de un archivo de fixtures o Cypress.env)
-    const validUser = 'root';
-    const validPassword = '1234';
+    let loginUrl;
+    let validUser;
+    let validPassword;
+
+    before(() => {
+        cy.env(['LOGIN_URL', 'VALID_USER', 'VALID_PASSWORD'])
+            .then((env) => {
+                loginUrl = env.LOGIN_URL;
+                validUser = env.VALID_USER;
+                validPassword = env.VALID_PASSWORD;
+
+                if (!loginUrl || !validUser || !validPassword) {
+                    throw new Error('Missing one or more required Cypress env values');
+                }
+            });
+    });
 
     beforeEach(() => {
         // Precondición general: El sistema web está disponible y el usuario no tiene sesión.
-        cy.visit('https://scpcdmxserverwebrtc.azurewebsites.net/login');
+        cy.visit(loginUrl);
     });
 
     it('CP-F1-001: Visualizar pantalla de inicio de sesión al acceder al sistema', () => {
