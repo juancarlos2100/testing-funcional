@@ -65,7 +65,33 @@ describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () 
     cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
   });
 
-  it('CP-F1-002-05: Nuevo intento después de credenciales incorrectas', () => {
+  it('CP-F1-002-05: Inicio de sesión con error de conexión o validación no disponible', () => {
+
+    // 1. SIMULAR LA FALLA DE RED (Mocking) con la ruta exacta de la API
+    // Usamos '**/api/Login/Autentificar' para atrapar cualquier petición a ese endpoint
+    cy.intercept('POST', '**/api/Login/Autentificar', {
+      forceNetworkError: true
+    }).as('fallaDeConexion');
+
+    // 2. INGRESAR CREDENCIALES
+    cy.get('input[name="usuario"]').clear().type(validUser);
+    cy.get('input[type="password"]').clear().type(validPassword);
+
+    // 3. EJECUTAR LA ACCIÓN
+    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+
+    // 4. SINCRONIZAR LA PRUEBA
+    // Ahora Cypress sí encontrará esta petición porque la ruta coincide perfectamente
+    cy.wait('@fallaDeConexion');
+
+    // 5. VALIDAR EL COMPORTAMIENTO DE LA INTERFAZ
+    cy.get('.alert-box.error #alert-message')
+      .should('be.visible')
+      .invoke('text')
+      .should('match', /no es posible validar las credenciales en ese momento|error de conexi[oó]n/i);
+  });
+
+  it('CP-F1-002-06: Nuevo intento después de credenciales incorrectas', () => {
     // 1. Provocar un error intencionalmente
     cy.get('input[name="usuario"]').type(invalidUser);
     cy.get('input[type="password"]').type(validPassword);
@@ -88,5 +114,7 @@ describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () 
     // 3. Resultado esperado
     cy.url().should('not.include', '/login');
   });
+
+
 
 });
