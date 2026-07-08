@@ -28,41 +28,33 @@ describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () 
 
   it('CP-F1-002-01: Inicio de sesión con usuario inválido', () => {
     // 1 y 2. Capturar usuario inválido y contraseña válida
-    cy.get('input[name="usuario"]').type(invalidUser);
-    cy.get('input[type="password"]').type(validPassword);
-
-    // 3. Seleccionar Iniciar Sesión
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(invalidUser, validPassword);
 
     // Resultado esperado: Solo se requiere que la alerta de error exista y sea visible
-    cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+    cy.assertLoginErrorVisible();
   });
 
   it('CP-F1-002-02: Inicio de sesión con contraseña inválida', () => {
     // 1 y 2. Capturar usuario válido y contraseña inválida
-    cy.get('input[name="usuario"]').type(validUser);
-    cy.get('input[type="password"]').type(invalidPassword);
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(validUser, invalidPassword);
 
     // Resultado esperado: Solo se requiere que la alerta de error exista y sea visible
-    cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+    cy.assertLoginErrorVisible();
   });
 
   it('CP-F1-002-03: Inicio de sesión con usuario y contraseña inválidos', () => {
-    cy.get('input[name="usuario"]').type(invalidUser);
-    cy.get('input[type="password"]').type(invalidPassword);
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(invalidUser, invalidPassword);
 
     // Resultado esperado: Solo se requiere que la alerta de error exista y sea visible
-    cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+    cy.assertLoginErrorVisible();
   });
 
   it('CP-F1-002-04: Inicio de sesión con usuario y contraseña vacíos', () => {
     // Clic directo en el botón sin escribir nada
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.submitLogin();
 
     // Resultado esperado: Solo se requiere que la alerta de error exista y sea visible
-    cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+    cy.assertLoginErrorVisible();
   });
 
   it('CP-F1-002-05: Inicio de sesión con error de conexión o validación no disponible', () => {
@@ -74,11 +66,7 @@ describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () 
     }).as('fallaDeConexion');
 
     // 2. INGRESAR CREDENCIALES
-    cy.get('input[name="usuario"]').clear().type(validUser);
-    cy.get('input[type="password"]').clear().type(validPassword);
-
-    // 3. EJECUTAR LA ACCIÓN
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(validUser, validPassword);
 
     // 4. SINCRONIZAR LA PRUEBA
     // Ahora Cypress sí encontrará esta petición porque la ruta coincide perfectamente
@@ -93,23 +81,17 @@ describe('Flujos Alternativos y Excepciones - Inicio de Sesión Stream RTC', () 
 
   it('CP-F1-002-06: Nuevo intento después de credenciales incorrectas', () => {
     // 1. Provocar un error intencionalmente
-    cy.get('input[name="usuario"]').type(invalidUser);
-    cy.get('input[type="password"]').type(validPassword);
-
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(invalidUser, validPassword);
 
     // Validamos que ocurrió el error inicial
-    cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+    cy.assertLoginErrorVisible();
 
     // 2. Realizar un nuevo intento
     // Vaciamos los campos de forma explícita para evitar arrastrar el usuario inválido.
     cy.get('input[name="usuario"]').invoke('val', '').trigger('input').should('have.value', '');
     cy.get('input[type="password"]').invoke('val', '').trigger('input').should('have.value', '');
 
-    cy.get('input[name="usuario"]').type(validUser);
-    cy.get('input[type="password"]').type(validPassword);
-
-    cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+    cy.login(validUser, validPassword);
 
     // 3. Resultado esperado
     cy.url().should('not.include', '/login');

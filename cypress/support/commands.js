@@ -1,25 +1,19 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+const LOGIN_BUTTON_REGEX = /iniciar sesi[oó]n|ingresar/i;
+
+Cypress.Commands.add('fillLoginForm', (username, password) => {
+	cy.get('input[name="usuario"]').clear().type(username);
+	cy.get('input[type="password"]').clear().type(password);
+});
+
+Cypress.Commands.add('submitLogin', () => {
+	cy.contains('button', LOGIN_BUTTON_REGEX).click();
+});
+
+Cypress.Commands.add('login', (username, password) => {
+	cy.fillLoginForm(username, password);
+	cy.submitLogin();
+});
+
+Cypress.Commands.add('assertLoginErrorVisible', () => {
+	cy.get('.alert-box.error #alert-message').should('exist').and('be.visible');
+});

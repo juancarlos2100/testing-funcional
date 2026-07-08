@@ -67,9 +67,7 @@ describe('Flujo 1 - Inicio de Sesión Stream RTC', () => {
     });
 
     it('CP-F1-005: Ejecutar inicio de sesión con credenciales válidas', () => {
-        cy.get('input[name="usuario"]').type(validUser);
-        cy.get('input[type="password"]').type(validPassword);
-        cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+        cy.login(validUser, validPassword);
 
         // Validamos el acceso exitoso (por ejemplo, confirmando que la URL cambió al dashboard)
         cy.url().should('not.include', '/login');
@@ -77,9 +75,7 @@ describe('Flujo 1 - Inicio de Sesión Stream RTC', () => {
 
     it('CP-F1-006: Visualización de información principal después del login', () => {
         // 1. Realizar login exitoso
-        cy.get('input[name="usuario"]').type(validUser);
-        cy.get('input[type="password"]').type(validPassword);
-        cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+        cy.login(validUser, validPassword);
 
         // 2. Observar encabezado principal
         cy.get('.header-bar').should('be.visible');
@@ -99,9 +95,7 @@ describe('Flujo 1 - Inicio de Sesión Stream RTC', () => {
 
     it('CP-F1-007: Carga inicial del tablero', () => {
         // 1. Iniciar sesión
-        cy.get('input[name="usuario"]').type(validUser);
-        cy.get('input[type="password"]').type(validPassword);
-        cy.contains('button', /iniciar sesi[oó]n|ingresar/i).click();
+        cy.login(validUser, validPassword);
 
         // 2. Esperar carga del tablero y validar que se muestra sin errores
         // Podrías validar la visibilidad de la etiqueta principal, un panel lateral, un mapa, etc.
