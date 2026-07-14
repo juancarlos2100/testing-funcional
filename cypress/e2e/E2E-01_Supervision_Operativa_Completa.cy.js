@@ -1,6 +1,6 @@
 describe('Flujo 1 - WEB-RTC: Tablero Principal y Streaming', () => {
 
-    const DISPOSITIVO_ID = '20659';
+    const DISPOSITIVO_ID = '16950';
 
     let validUser;
     let validPassword;
